@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    android:orientation="vertical"
+    tools:context="com.droidev.app.ioscalculator.ui.MainActivity">
+
+    <com.droidev.app.ioscalculator.ui.widgets.CalcTextView
+        android:id="@+id/main_text_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right|bottom"
+        android:maxLines="2"
+        android:minHeight="@dimen/calc_display_min_height"
+        tools:text="1234567890"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_34"
+        custom:typefaceAsset="fonts/Roboto-Light.ttf" />
+
+    <include layout="@layout/layout_top_row" />
+
+    <include layout="@layout/layout_third_row" />
+
+    <include layout="@layout/layout_second_row" />
+
+    <include layout="@layout/layout_first_row" />
+
+    <include layout="@layout/layout_zero_row" />
+
+</LinearLayout>
