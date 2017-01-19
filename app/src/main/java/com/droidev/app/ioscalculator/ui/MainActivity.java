@@ -7,10 +7,12 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.droidev.app.ioscalculator.R;
+import com.droidev.app.ioscalculator.util.CalculationHelper;
 import com.droidev.app.ioscalculator.util.Constants;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+    public static final int MAX_ENTRY_LIMIT = 10;
     private TextView mMainTextField;
     private int mOperand = -1;
     private String mFirstValue;
@@ -135,16 +137,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void handleActionClick(int operation) {
 
-        if (operation != Constants.Operands.EQUAL) {
-            mFirstValue = mMainTextField.getText().toString();
+        if (operation != Constants.Operands.EQUAL && TextUtils.isEmpty(mFirstValue)) {
+            mFirstValue = mMainTextField.getText().toString().replaceAll(",", "");
             mMainTextField.setText("");
             mOperand = operation;
+        } else if (operation != Constants.Operands.EQUAL && !TextUtils.isEmpty(mFirstValue) && TextUtils.isEmpty(mSecondValue)) {
+            mSecondValue = mMainTextField.getText().toString().replaceAll(",", "");
+            performOperation(operation);
+            mMainTextField.setText("");
+            mOperand = operation;
+        } else if (operation != Constants.Operands.EQUAL && TextUtils.isEmpty(mSecondValue)) {
+            mMainTextField.setText("");
         } else {
-            mSecondValue = mMainTextField.getText().toString();
+            mSecondValue = mMainTextField.getText().toString().replaceAll(",", "");
             performOperation(operation);
             mOperand = -1;
-            mFirstValue = "";
-            mSecondValue = "";
         }
     }
 
@@ -152,7 +159,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (operation != -1) {
             if (!TextUtils.isEmpty(mFirstValue)) {
-                double firstValue = Double.parseDouble(mFirstValue);
+                double firstValue;
+
+                try {
+                    firstValue = Double.parseDouble(mFirstValue);
+                } catch (NumberFormatException nfe) {
+                    firstValue = 0;
+                }
 
                 if (!TextUtils.isEmpty(mSecondValue)) {
                     double secondValue = Double.parseDouble(mSecondValue);
@@ -165,40 +178,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void doCalculation(int operation, double value1, double value2) {
-        String result;
+        String result = "";
 
         switch (operation) {
             case Constants.Operands.PLUS:
-                result = String.valueOf(value1 + value2);
+                result = CalculationHelper.sumTwoNumbers(value1, value2);
                 mMainTextField.setText(result);
                 break;
 
             case Constants.Operands.MINUS:
-                result = String.valueOf(value1 - value2);
+                result = CalculationHelper.substractTwoNumbers(value1, value2);
                 mMainTextField.setText(result);
                 break;
 
             case Constants.Operands.MULTIPLY:
-                result = String.valueOf(value1 * value2);
+                result = CalculationHelper.multiplyTwoNumbers(value1, value2);
                 mMainTextField.setText(result);
                 break;
 
             case Constants.Operands.DIVISION:
-                result = String.valueOf(value1 / value2);
+                result = CalculationHelper.divideTwoNumbers(value1, value2);
                 mMainTextField.setText(result);
                 break;
 
             case Constants.Operands.PERCENTAGE:
-                result = String.valueOf(value1 / value2 * 100);
+                result = CalculationHelper.percentageTwoNumbers(value1, value2);
                 mMainTextField.setText(result);
                 break;
         }
+        mFirstValue = result;
+        mSecondValue = "";
     }
 
     private void handleNumberClick(String number) {
         String currentEntry = mMainTextField.getText().toString().trim();
 
-        if (currentEntry.length() < 10) {
+        if (currentEntry.length() < MAX_ENTRY_LIMIT) {
             mMainTextField.setText(currentEntry + number);
         }
     }
